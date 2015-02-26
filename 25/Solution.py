@@ -62,7 +62,6 @@ class Solution:
             if i_node:
                 group_head = i_node
                 j_node = i_node.next
-        print "tmp_node.val=%d" %tmp_node.val
         return newHead
 
 if __name__ == "__main__":
