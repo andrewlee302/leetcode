@@ -8,6 +8,9 @@ class Solution:
             # !!! x_index != 0
             if x_index != 0 and x == num[x_index - 1]:
                 continue
+            # optimized
+            if x > 0:
+                break
             expertVal = 0 - x
             y_index = x_index + 1
             z_index = len(num) - 1
