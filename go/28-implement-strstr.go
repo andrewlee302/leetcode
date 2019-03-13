@@ -2,14 +2,14 @@ func strStr(haystack string, needle string) int {
     if len(needle) == 0 {
         return 0
     }
-    for start := 0; start <= len(haystack) - len(needle); start ++{
-        i, j := start, 0
-        for ;j < len(needle) && haystack[i] == needle[j]; {
-            i++
-            j++
-        }
-        if j == len(needle) {
-            return start
+    for i := 0; i <= len(haystack) - len(needle); i++ {
+        for j := 0; j < len(needle); j++ {
+            if haystack[i+j] != needle[j] {
+                break
+            }
+            if j == len(needle) - 1 {
+                return i
+            }
         }
     }
     return -1
