@@ -18,7 +18,6 @@ func search(nums []int, target int) int {
     } else {
         return binarySearch(nums, 0, minIdx-1, target)
     }
-    
 }
 
 func binarySearch(nums []int, left, right int, target int) int {
