@@ -6,36 +6,23 @@
  *     Right *TreeNode
  * }
  */
-import "container/list"
 
-type TreeNodeLevel struct {
-    *TreeNode
-    Level int
-}
 func levelOrder(root *TreeNode) [][]int {
-    if root == nil {
-        return [][]int{}
+    if root == nil { return [][]int{} }
+    var ret [][]int
+    var queue []*TreeNode
+    queue = append(queue, root)
+    for len(queue) != 0 {
+        size := len(queue)
+        values := make([]int, 0, size)
+        for i := 0; i < size; i++ {
+            node := queue[0]
+            queue = queue[1:]
+            values = append(values, node.Val)
+            if node.Left != nil { queue = append(queue, node.Left) }
+            if node.Right != nil { queue = append(queue, node.Right) }
+        }
+        ret = append(ret, values)
     }
-    return BFS(root)
-}
-
-func BFS(root *TreeNode) [][]int {
-    var results [][]int
-    queue := list.New()
-    queue.PushBack(&TreeNodeLevel{root, 0})
-    for e := queue.Front(); e != nil; e = e.Next() {
-        node := e.Value.(*TreeNodeLevel)
-        if node.Level > len(results) - 1 {
-            results = append(results, []int{node.Val})
-        } else {
-            results[node.Level] = append(results[node.Level], node.Val)
-        }
-        if node.Left != nil {
-            queue.PushBack(&TreeNodeLevel{node.Left, node.Level+1})
-        }
-        if node.Right != nil {
-            queue.PushBack(&TreeNodeLevel{node.Right, node.Level+1})
-        }
-    }
-    return results
+    return ret
 }
