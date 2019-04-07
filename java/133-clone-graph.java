@@ -14,6 +14,7 @@ class Node {
 */
 import java.util.Stack;
 
+// DFS iteration
 class Solution {
     public Node cloneGraph(Node node) {
         HashMap<Node, Node> map = new HashMap<Node, Node>();
@@ -35,5 +36,29 @@ class Solution {
             }
         }
         return map.get(node);                          
+    }
+}
+
+// DFS recursion
+class Solution {
+    public Node cloneGraph(Node node) {
+        HashMap<Node, Node> map = new HashMap<Node, Node>();
+        Node nodeCopy = new Node(node.val, new ArrayList<Node>());
+        map.put(node, nodeCopy);
+        DFS(node, map);
+        return map.get(node);
+    }
+    
+    void DFS(Node root, HashMap<Node, Node> map) {
+        Node rootCopy = map.get(root);
+        for (Node neighbor: root.neighbors) {
+            Node neighborCopy = map.get(neighbor);
+            if (neighborCopy == null) {
+                neighborCopy = new Node(neighbor.val, new ArrayList<Node>());
+                map.put(neighbor, neighborCopy);
+                DFS(neighbor, map);
+            }
+            rootCopy.neighbors.add(neighborCopy);
+        }
     }
 }
