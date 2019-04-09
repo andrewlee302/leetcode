@@ -7,18 +7,18 @@
  * }
  */
 func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
-    var ret *TreeNode
-    DFS(root, p, q, &ret)
+    _, ret := DFS(root, p, q)
     return ret
 }
 
-func DFS(root, p, q *TreeNode, ret **TreeNode) int {
-    if root == nil { return 0 }
-    if *ret != nil { return 0 } // prune
-    match := 0
+func DFS(root, p, q *TreeNode) (int, *TreeNode) {
+    if root == nil { return 0, nil }
+    var match = 0
     if root.Val == p.Val || root.Val == q.Val { match = 1 }
-    match += DFS(root.Left, p, q, ret)
-    match += DFS(root.Right, p, q, ret)
-    if match >= 2 && *ret == nil { *ret = root }
-    return match
+    leftMatch, leftLCA := DFS(root.Left, p, q)
+    rightMatch, rightLCA := DFS(root.Right, p, q)
+    if leftMatch == 2 { return 2, leftLCA }
+    if rightMatch == 2 { return 2, rightLCA }
+    match += leftMatch + rightMatch
+    if match == 2 { return match, root } else { return match, nil }
 }

@@ -4,10 +4,6 @@ func myPow(x float64, n int) float64 {
         x = 1/x
         n = -n
     }
-    part := x
-    for i := 1; ; i++ {
-        part = part * part
-    }
     part := myPow(x, n/2)
     if n % 2 == 0 { return part * part } else { return part * part * x}
 }

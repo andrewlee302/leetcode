@@ -1,66 +1,60 @@
-type LRUCache struct {
-    cache map[int]*Node
-    capacity int
-    head *Node
-    tail *Node
+type Node struct {
+    Key, Value int
+    Prev, Next *Node
 }
 
-type Node struct {
-    prev *Node
-    next *Node
-    key int
-    val int
+type LRUCache struct {
+    dummy *Node
+    kvs map[int]*Node
+    limit int
 }
+
 
 func Constructor(capacity int) LRUCache {
-    return LRUCache{cache:make(map[int]*Node), capacity:capacity}
+    dummy := &Node{}
+    dummy.Prev, dummy.Next = dummy, dummy
+    return LRUCache{dummy: dummy, kvs: make(map[int]*Node), limit: capacity}
 }
+
 
 func (this *LRUCache) Get(key int) int {
-    if v, ok := this.cache[key]; ok {
-        this.update(v)
-        return v.val
-    } else {
+    if node, ok := this.kvs[key]; !ok {
         return -1
+    } else {
+        this.Prioritize(node)
+        return node.Value
     }
 }
+
 
 func (this *LRUCache) Put(key int, value int)  {
-    if v, ok := this.cache[key]; ok {
-        this.update(v)
-        v.val = value
+    dummy := this.dummy
+    if node, ok := this.kvs[key]; !ok {
+        node = &Node{Key:key, Value:value, Prev:dummy, Next:dummy.Next}
+        this.kvs[key] = node
+        if len(this.kvs) > this.limit {
+            evictNode := dummy.Prev
+            delete(this.kvs, evictNode.Key)
+            evictNode.Prev.Next = dummy
+            dummy.Prev = evictNode.Prev
+        }
+        dummy.Next.Prev = node
+        dummy.Next = node
     } else {
-        if len(this.cache) >= this.capacity {
-            delete(this.cache, this.head.key)
-            this.head.next.prev = this.tail
-            this.tail.next = this.head.next
-            this.head = this.head.next
-        }
-        newNode := &Node{key: key, val:value}
-        if this.head == nil {
-            this.head, this.tail = newNode, newNode
-        } else {
-            this.head.prev, this.tail.next = newNode, newNode
-        }
-        newNode.prev, newNode.next = this.tail, this.head
-        this.tail = newNode
-        this.cache[key] = newNode
+        node.Value = value
+        this.Prioritize(node)
     }
 }
 
-func (this *LRUCache) update(v *Node) {
-    if v == this.tail {
-        return
-    }
-    v.prev.next, v.next.prev = v.next, v.prev
-    if this.head == v {
-        this.head = v.next
-    }
-    // move to tail
-    v.next, v.prev = this.head, this.tail
-    this.tail.next, this.head.prev = v, v
-    this.tail = v
+func (this *LRUCache) Prioritize(node *Node) {
+    dummy := this.dummy
+    node.Prev.Next = node.Next
+    node.Next.Prev = node.Prev
+    node.Prev, node.Next = dummy, dummy.Next
+    dummy.Next.Prev = node
+    dummy.Next = node
 }
+
 
 /**
  * Your LRUCache object will be instantiated and called as such:

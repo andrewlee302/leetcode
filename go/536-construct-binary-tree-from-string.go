@@ -6,31 +6,26 @@
  *     Right *TreeNode
  * }
  */
-import "container/list"
 func str2tree(s string) *TreeNode {
     if len(s) == 0 { return nil }
-    stack := list.New()
+    var stack []*TreeNode
     for i := 0; i < len(s); {
-        if s[i] == '(' {
-            i++
-        } else if s[i] == ')' {
-            stack.Remove(stack.Back())
-            i++
-        } else {
-            neg := false
-            if s[i] == '-' { i, neg = i + 1, true }
-            num := 0
-            for ; i < len(s) && s[i] >= '0' && s[i] <= '9'; i++ { 
-                num = num * 10 + int(s[i] - '0') 
+        if s[i] != '(' && s[i] != ')' {
+            start := i
+            for ; i < len(s) && s[i] != '(' && s[i] != ')'; i++ { }
+            v, _ := strconv.Atoi(s[start:i])
+            node := &TreeNode{v, nil, nil}
+            if len(stack) != 0 {
+                p := stack[len(stack)-1]
+                if p.Left == nil { p.Left = node } else { p.Right = node }
             }
-            if neg { num = -num }
-            curr := &TreeNode{num, nil, nil}
-            if stack.Len() != 0 { 
-                p := stack.Back().Value.(*TreeNode)
-                if p.Left != nil { p.Right = curr } else { p.Left = curr }
-            }
-            stack.PushBack(curr)
+            stack = append(stack, node)
+        } else if s[i] == '(' {
+            i++
+        } else { // s[i] == ')'
+            stack = stack[:len(stack)-1]
+            i++
         }
     }
-    return stack.Back().Value.(*TreeNode)
+    return stack[0]
 }
