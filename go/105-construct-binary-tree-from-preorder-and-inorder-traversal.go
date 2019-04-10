@@ -7,16 +7,14 @@
  * }
  */
 func buildTree(preorder []int, inorder []int) *TreeNode {
-    return helper(&preorder, inorder)
-}
-
-func helper(preorder *[]int, inorder []int) *TreeNode {
-    if len(*preorder) == 0 || len(inorder) == 0 { return nil }
-    root := &TreeNode{(*preorder)[0], nil, nil}
-    i := 0
-    for ; i < len(inorder) && inorder[i] != (*preorder)[0]; i++ { }
-    *preorder = (*preorder)[1:]
-    root.Left = helper(preorder, inorder[:i]) 
-    root.Right = helper(preorder, inorder[i+1:]) 
+    if len(preorder) == 0 { return nil }
+    root := &TreeNode{preorder[0], nil, nil}
+    pivotIdx := 0
+    for ; pivotIdx < len(inorder); pivotIdx++ {
+        if inorder[pivotIdx] == preorder[0] { break }
+    }
+    // Number, left: pivot, right: len(preorder) - 1 - pivot
+    root.Left = buildTree(preorder[1:pivotIdx+1], inorder[0:pivotIdx])
+    root.Right = buildTree(preorder[pivotIdx+1:], inorder[pivotIdx+1:])
     return root
 }

@@ -3,12 +3,11 @@ type Solution struct {
     nums []int
 }
 
-
 func Constructor(nums []int) Solution {
     return Solution{nums}
 }
 
-
+// Reservoir Sampling
 func (this *Solution) Pick(target int) int {
     cnt := 0
     var chosen int
@@ -18,7 +17,6 @@ func (this *Solution) Pick(target int) int {
     }
     return chosen
 }
-
 
 /**
  * Your Solution object will be instantiated and called as such:

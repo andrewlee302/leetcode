@@ -15,10 +15,12 @@ class Node {
 };
 */
 class Solution {
-    Node prev, head;
+    Node dummy = new Node();
+    Node prev = dummy;
     public Node treeToDoublyList(Node root) {
         if (root == null) return null;
         inOrderTreeTraversal(root);
+        Node head = dummy.right;
         head.left = prev;
         prev.right = head;
         return head;
@@ -28,12 +30,8 @@ class Solution {
     public void inOrderTreeTraversal(Node root) {
         if (root == null) return;
         inOrderTreeTraversal(root.left);
-        if (prev == null) {
-            head = root;
-        } else {
-            prev.right = root;
-            root.left = prev;
-        }
+        prev.right = root;
+        root.left = prev;
         prev = root;
         inOrderTreeTraversal(root.right);
     }

@@ -1,57 +1,45 @@
-import "container/list"
-import "strings"
 import "strconv"
+import "strings"
+const (
+    NUM_TAG = "0"
+    STR_TAG = "1"
+)
 func decodeString(s string) string {
-    stack := list.New()
-    num := 0
+    var stack [][]string
     var builder strings.Builder
-    for i := 0; i < len(s); i++ {
-        if s[i] >= '0' && s[i] <= '9' { 
-            num = num * 10 + int(s[i] - '0')
-            continue
-        }
-        if s[i] == '[' { 
-            stack.PushBack(strconv.Itoa(num))
-            stack.PushBack("[")
-            num = 0
+    for i := 0; i < len(s); {
+        if s[i] >= '0' && s[i] <= '9' {
+            start := i
+            for ; i < len(s) && s[i] >= '0' && s[i] <= '9'; i++ { }
+            stack = append(stack, []string{NUM_TAG, s[start:i]})
+        } else if s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z' {
+            start := i
+            for ; i < len(s) && (s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z'); i++ { }
+            stack = append(stack, []string{STR_TAG, s[start:i]})
         } else if s[i] == ']' {
-            var str = ""
-            for e := stack.Back(); e != nil; e = stack.Back() {
-                stack.Remove(e)
-                v := e.Value.(string) // maybe ""
-                // fmt.Println("here", e.Value, e.Prev(), stack.Back().Value)
-                if v == "[" { break }
-                str = v + str
-            } 
-            e := stack.Back()
-            stack.Remove(e)
-            cnt, _ := strconv.Atoi(e.Value.(string))
-            for k := 0; k < cnt; k++ {
-                builder.WriteString(str)    
+            str := ""
+            for len(stack) != 0 {
+                top := stack[len(stack)-1]
+                stack = stack[:len(stack)-1]
+                if top[0] == NUM_TAG {
+                    repeatedCnt, _ := strconv.Atoi(top[1])
+                    for i := 0; i < repeatedCnt; i++ {
+                        builder.WriteString(str)
+                    }
+                    break
+                } else {
+                    str = top[1] + str
+                }
             }
-            fmt.Println(i, e.Value.(string), str, builder.String())
-            stack.PushBack(builder.String())
+            stack = append(stack, []string{STR_TAG, builder.String()})
             builder.Reset()
-        } else {
-            for ; i < len(s) && isValidString(s[i]); i++ {
-                builder.WriteByte(s[i])
-            }
-            stack.PushBack(builder.String()) // maybe ""
-            builder.Reset()
-            if i != len(s) { i-- }
+            i++
+        } else { // s[i] == '['
+            i++
         }
     }
-    for e := stack.Front(); e != nil; e = e.Next() {
-        str := e.Value.(string)
-        builder.WriteString(str)
+    for i := 0; i < len(stack); i++ {
+        builder.WriteString(stack[i][1])
     }
     return builder.String()
-}
-
-func isDigit(b byte) bool {
-    return b >= '0' && b <= '9'
-}
-
-func isValidString(b byte) bool {
-    return !isDigit(b) && b != ']' && b != '['
 }

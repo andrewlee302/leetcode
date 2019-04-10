@@ -2,10 +2,10 @@ func intersect(nums1 []int, nums2 []int) []int {
     m1, m2 := make(map[int]int), make(map[int]int)
     for _, v := range nums1 { m1[v]++ }
     for _, v := range nums2 { m2[v]++ }
-    if len(m1) < len(m2) { 
-        return mapIntersect(m1, m2) 
+    if len(m1) < len(m2) {
+        return mapIntersect(m1, m2)
     } else {
-        return mapIntersect(m2, m1) 
+        return mapIntersect(m2, m1)
     }
 }
 
@@ -17,7 +17,7 @@ func mapIntersect(m1, m2 map[int]int) []int {
             for i := 0; i < times; i++ {
                 ret = append(ret, k1)
             }
-        }  
+        }
     }
     return ret
 }

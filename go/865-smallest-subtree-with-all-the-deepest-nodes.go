@@ -7,26 +7,28 @@
  * }
  */
 func subtreeWithAllDeepest(root *TreeNode) *TreeNode {
-    if root == nil { return nil }
-    node, _ := dfs(root, 0)
-    return node
+    ret, _ := recursion(root)
+    return ret
 }
 
-// root is not nil
-func dfs(root *TreeNode, depth int) (*TreeNode, int) {
-    if root.Left == nil && root.Right == nil { return root, depth }
-    var l, r *TreeNode
-    var lDepth, rDepth int
-    if root.Left != nil {  l, lDepth = dfs(root.Left, depth+1) }
-    if root.Right != nil {  r, rDepth = dfs(root.Right, depth+1) }
-    if l != nil && r != nil { 
-        if lDepth < rDepth {
-            return r, rDepth
-        } else if lDepth > rDepth {
-            return l, lDepth
-        } else {
-            return root, lDepth
-        }
+func recursion(root *TreeNode) (*TreeNode, int) {
+    if root == nil { return nil, 0 }
+    leftRet, leftDepth := recursion(root.Left)
+    rightRet, rightDepth := recursion(root.Right)
+    var depth int
+    var ret *TreeNode
+    if leftDepth == rightDepth {
+        depth, ret = leftDepth + 1, root
+    } else if leftDepth > rightDepth {
+        depth, ret = leftDepth + 1, leftRet
+    } else {
+        depth, ret = rightDepth + 1, rightRet
     }
-    if l != nil { return l, lDepth } else { return r, rDepth }
+    return ret, depth
 }
+
+// depth = max(leftDepth, rightDepth) + 1
+// smallestSubTree: 
+// if leftDepth == rightDepth -> root
+// else if leftDepth > rightDepth -> leftRet
+// else -> rightRet
