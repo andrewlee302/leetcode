@@ -23,5 +23,4 @@ func flatten(root *TreeNode)  {
         if right != nil { stack.PushBack(right) }
         if left != nil { stack.PushBack(left) }
     }
-    root = prev.Right
 }

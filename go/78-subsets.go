@@ -1,18 +1,18 @@
 func subsets(nums []int) [][]int {
     ret := make([][]int, 0, 1<<uint(len(nums)))
-    subset := make([]int, len(nums))
-    backtracking(subset, 0, nums, &ret)
+    buf := make([]int, len(nums))
+    backtracking(nums, 0, buf, 0, &ret)
     return ret
 }
 
-func backtracking(subset []int, idx int, nums []int, ret *[][]int) {
-    if len(nums) == 0 {
-        finalSubset := make([]int, idx)
-        copy(finalSubset, subset[:idx])
-        *ret = append(*ret, finalSubset)
+func backtracking(nums []int, idx int, buf []int, bufIdx int, ret *[][]int) {
+    if len(nums) == idx {
+        subset := make([]int, bufIdx)
+        copy(subset, buf[:bufIdx])
+        *ret = append(*ret, subset)
         return
     }
-    subset[idx] = nums[0]
-    backtracking(subset, idx+1, nums[1:], ret)
-    backtracking(subset, idx, nums[1:], ret)
+    buf[bufIdx] = nums[idx]
+    backtracking(nums, idx+1, buf, bufIdx+1, ret)
+    backtracking(nums, idx+1, buf, bufIdx, ret)
 }
