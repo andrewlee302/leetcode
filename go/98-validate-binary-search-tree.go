@@ -8,17 +8,20 @@
  */
 
 func isValidBST(root *TreeNode) bool {
-    var prev int
-    isFirst := true
-    return InOrderDFS(root, &prev, &isFirst)
+    var prev *TreeNode = nil
+    isValid := true
+    DFS(root, &prev, &isValid)
+    return isValid
 }
 
-func InOrderDFS(root *TreeNode, prev *int, isFirst *bool) bool {
-    if root == nil { return true }
-    if !InOrderDFS(root.Left, prev, isFirst) { return false }
-    if !*isFirst && root.Val <= *prev { return false }
-    *prev = root.Val
-    *isFirst = false
-    if !InOrderDFS(root.Right, prev, isFirst) { return false }
-    return true
+func DFS(root *TreeNode, prev **TreeNode, isValid *bool) {
+    if root == nil { return }
+    DFS(root.Left, prev, isValid)
+    if !*isValid { return }
+    if *prev != nil && (*prev).Val >= root.Val {
+        *isValid = false
+        return
+    }
+    *prev = root
+    DFS(root.Right, prev, isValid)
 }
