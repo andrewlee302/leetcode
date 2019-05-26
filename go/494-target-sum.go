@@ -2,7 +2,6 @@ func findTargetSumWays(nums []int, S int) int {
     if len(nums) == 0 || S > 1000 || S < -1000 { return 0 }
     dp := make([][]int, len(nums))
     dp[0] = make([]int, 2001) 
-    for j := 0; j < 2001; j++ { dp[0][j] = 0 }
     // dp[0][nums[0]+1000], dp[0][-nums[0]+1000] = 1, 1
     dp[0][nums[0]+1000]++
     dp[0][-nums[0]+1000]++
