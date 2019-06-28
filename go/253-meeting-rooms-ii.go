@@ -1,48 +1,29 @@
-/**
- * Definition for an interval.
- * type Interval struct {
- *	   Start int
- *	   End   int
- * }
- */
-import "container/heap"
+// min-heap.
 import "sort"
-func minMeetingRooms(intervals []Interval) int {
-    if len(intervals) == 0 {
-        return 0
-    }
-    sort.Sort(Intervals(intervals))
-    h := &IntHeap{intervals[0].End}
-    heap.Init(h)
-    for _, itv := range intervals[1:] {
-        earliestEnd := heap.Pop(h).(int)
-        if earliestEnd <= itv.Start {
-            heap.Push(h, itv.End)
-        } else {
-            heap.Push(h, earliestEnd)
-            heap.Push(h, itv.End)
+import "container/heap"
+func minMeetingRooms(intervals [][]int) int {
+    sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })
+    h := &IntHeap{}
+    ret := 0
+    for _, interval := range intervals {
+        // release rooms
+        for h.Len() != 0 && (*h)[0] <= interval[0] { 
+            heap.Pop(h)
         }
-    } 
-    return len(*h)
+        heap.Push(h, interval[1])
+        if h.Len() > ret { ret = h.Len() }
+    }
+    return ret
 }
 
+// minimum heap. If we want maximum heap, change the Less function.
 type IntHeap []int
-func (h IntHeap) Less (i, j int) bool { return h[i] < h[j]}
-func (h IntHeap) Swap (i, j int) { h[i], h[j] = h[j], h[i]}
-func (h IntHeap) Len() int { return len(h)}
-func (h *IntHeap) Push(v interface{}) {
-    *h = append(*h, v.(int))
+func (h IntHeap) Less (i ,j int) bool { return h[i] < h[j] }
+func (h IntHeap) Swap (i, j int) { h[i], h[j] = h[j], h[i] } 
+func (h IntHeap) Len() int { return len(h) }
+func (h *IntHeap) Push(x interface{}) { *h = append(*h, x.(int)) } // add x as element Len()
+func (h *IntHeap) Pop() interface{} { // remove and return element Len() - 1.
+    x := (*h)[len(*h)-1] // Note: (*h)[i]
+    *h = (*h)[:len(*h)-1]
+    return x
 }
-func (h *IntHeap) Pop() interface{} {
-    l := len(*h)
-    v := (*h)[l-1]
-    *h = (*h)[:l-1]
-    return v
-}
-
-type Intervals []Interval
-func (itl Intervals) Less (i, j int) bool { return itl[i].Start < itl[j].Start}
-func (itl Intervals) Swap (i, j int) { itl[i], itl[j] = itl[j], itl[i]}
-func (itl Intervals) Len() int { return len(itl)}
-
-
