@@ -14,3 +14,10 @@ Programming languages: Golang/Java.
 * 04/15/2019 Get the passed notification.
 * 04/18/2019 Called by a PhD recruiter and make the timing clear.
 * Continue...
+
+## Note.
+1. Design problems are not studies clearly.
+2. Some better approaches are needed in previous problems.
+3. Revise the problems in a plan.
+
+* 07/14/2019 Almost scan the 200 most frequenced problems with the Facebook tag.
