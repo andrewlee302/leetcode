@@ -6,14 +6,14 @@
  *
  * func (this *Master) Guess(word string) int {}
  */
-func findSecretWord(wordlist []string, master *Master) {
+ func findSecretWord(wordlist []string, master *Master) {
     match := make([][]int, len(wordlist))
     for i := 0; i < len(wordlist); i++ {
         match[i] = make([]int, len(wordlist))
-        for j := 0; j < len(wordlist); j++ {
-            for k := 0; k < 6; k++ {
-                if wordlist[i][k] == wordlist[j][k] { match[i][j]++ }
-            }
+        for j := 0; j <= i; j++ { // symmetric.
+            cnt := 0
+            for k := 0; k < 6; k++ { if wordlist[i][k] == wordlist[j][k] { cnt++ } }
+            match[i][j], match[j][i] = cnt, cnt
         }
     }
     var candidates []int
@@ -26,7 +26,7 @@ func findSecretWord(wordlist []string, master *Master) {
         if matchCnt == 6 { return }
         ptr := 0
         for _, c := range candidates {
-            if match[guessIdx][c] == matchCnt { 
+            if match[guessIdx][c] == matchCnt {
                 candidates[ptr] = c
                 ptr++
             }
@@ -50,3 +50,4 @@ func chooseMinmalWorstGuess(match [][]int, candidates []int, guessSet map[int]bo
 }
 
 func max(i, j int) int { if i > j { return i } else { return j } }
+
