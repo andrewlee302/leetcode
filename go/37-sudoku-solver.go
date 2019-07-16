@@ -1,56 +1,38 @@
-// recursion with pruning.
 func solveSudoku(board [][]byte)  {
-    rows, columns, boxes := make([][]bool, 9), make([][]bool, 9), make([][]bool, 9)
-    for i := 0; i < 9; i++ {
-        rows[i], columns[i], boxes[i] = make([]bool, 10), make([]bool, 10), make([]bool, 10)
-    }
-    for i := 0; i < 9; i++ {
-        for j := 0; j < 9; j++ {
-            if board[i][j] != '.' {
-                changeNum(board, i, j, board[i][j], rows, columns, boxes, true)
+    var rows, cols, blocks [9][10]bool
+    for r := 0; r < 9; r++ {
+        for c := 0; c < 9; c++ {
+            b := (r/3)*3+c/3
+            if v := board[r][c]; v != '.' {
+                v = v - '0'
+                rows[r][v], cols[c][v], blocks[b][v] = true, true, true
             }
         }
     }
-    solved := false
-    for k := byte(1); k <= 9; k++ {
-        backtracking(board, 0, 0, k+'0', rows, columns, boxes, &solved)
-        if solved { return }
-    }
+    helper(board, 0, 0, rows, cols, blocks)
 }
 
-func backtracking(board [][]byte, row, col int, val byte, rows, columns, boxes [][]bool, solved *bool) {
-    if *solved { return }
-    if row == 9 && col == 0 {
-        *solved = true
-        return
+func helper(board [][]byte, r, c int, rows, cols, blocks [9][10]bool) bool {
+    if r == 9 && c == 0 { return true }
+    if board[r][c] != '.' {
+        nextR, nextC := nextRC(r, c)
+        return helper(board, nextR, nextC, rows, cols, blocks)
     }
-    newRow, newCol := row, col
-    if col == 8 { newRow, newCol = newRow + 1, 0 } else { newCol++ }
-    if board[row][col] != '.' {
-        backtracking(board, newRow, newCol, val, rows, columns, boxes, solved)
-    } else {
-        if !isValid(row, col, val, rows, columns, boxes) { return }
-        changeNum(board, row, col, val, rows, columns, boxes, true)
-        for k := byte(1); k <= 9; k++ {
-            backtracking(board, newRow, newCol, k+'0', rows, columns, boxes, solved)
-            if *solved { return }
+    for v := 1; v <= 9; v++ {
+        b := (r/3)*3+c/3
+        if !rows[r][v] && !cols[c][v] && !blocks[b][v] {
+            board[r][c] = byte(v) + '0'
+            nextR, nextC := nextRC(r, c)
+            rows[r][v], cols[c][v], blocks[b][v]  = true, true, true
+            if helper(board, nextR, nextC, rows, cols, blocks) { return true }
+            rows[r][v], cols[c][v], blocks[b][v]  = false, false, false
+            board[r][c] = '.'
         }
-        changeNum(board, row, col, val, rows, columns, boxes, false)
-    }   
+    }
+    return false
 }
 
-func isValid(row, col int, val byte, rows, columns, boxes [][]bool) bool {
-    digit := int(val - '0')
-    boxesId := row/3*3 + col/3
-    return !(rows[row][digit] || columns[col][digit] || boxes[boxesId][digit])
-}
-
-func changeNum(board [][]byte, row, col int, val byte, rows, columns, boxes [][]bool, place bool) { 
-    // remove the num if place is false.
-    digit := int(val - '0')
-    boxesId := row/3*3 + col/3
-    if place { board[row][col] = val } else { board[row][col] = '.' }
-    rows[row][digit] = place
-    columns[col][digit] = place
-    boxes[boxesId][digit] = place
+func nextRC(r, c int) (int, int) {
+    if c++; c == 9 { r, c = r+1, 0 }
+    return r, c
 }

@@ -1,51 +1,37 @@
 func removeInvalidParentheses(s string) []string {
-    leftRm, rightRm := 0, 0
-    matchDiff := 0
+    diff := 0
+    rmLeftCnt, rmRightCnt := 0, 0
     for i := 0; i < len(s); i++ {
-        if s[i] == '(' {
-            matchDiff++
-        } else if s[i] == ')' {
-            matchDiff--
-            if matchDiff < 0 {
-                rightRm++
-                matchDiff = 0
-            }
+        if s[i] == '(' { diff++ } else if s[i] == ')' { diff-- }
+        if diff < 0 {
+            diff = 0
+            rmRightCnt++
         }
     }
-    leftRm = matchDiff
+    if diff > 0 { rmLeftCnt = diff }
+    retMap := make(map[string]bool)
     buf := make([]byte, len(s))
-    m := make(map[string]bool)
-    helper(s, buf, 0, 0, 0, leftRm, rightRm, m)
+    helper(s, 0, buf, 0, 0, rmLeftCnt, rmRightCnt, retMap)
     var ret []string
-    for str, _ := range m {
-        ret = append(ret, str)
-    }
+    for val, _ := range retMap { ret = append(ret, val) }
     return ret
 }
 
-// matchDiff is always zero at the begin of the invocation.
-func helper(s string, buf []byte, bufCnt, idx, matchDiff, leftRm, rightRm int, m map[string]bool) {
-    if idx == len(buf) {
-        if matchDiff == 0 && leftRm == 0 && rightRm == 0 {
-            m[string(buf[:bufCnt])] = true
-        }
+// diff is always non-negative.
+func helper(s string, idx int, buf []byte, bufIdx int, diff, rmLeftCnt, rmRightCnt int, ret map[string]bool) {
+    if idx == len(s) {
+        if rmLeftCnt == 0 && rmRightCnt == 0 { ret[string(buf[:bufIdx])] = true }
         return
     }
-    // try to discard
-    if s[idx] == '(' && leftRm > 0 {
-        helper(s, buf, bufCnt, idx+1, matchDiff, leftRm-1, rightRm, m) 
-    } else if s[idx] == ')' && rightRm > 0 {
-        helper(s, buf, bufCnt, idx+1, matchDiff, leftRm, rightRm-1, m) 
+    if s[idx] == '(' && rmLeftCnt > 0 {
+        helper(s, idx+1, buf, bufIdx, diff, rmLeftCnt-1, rmRightCnt, ret)
+    } else if s[idx] == ')' && rmRightCnt > 0 {
+        helper(s, idx+1, buf, bufIdx, diff, rmLeftCnt, rmRightCnt-1, ret)
     }
-    
-    // try to keep
-    buf[bufCnt] = s[idx]
-    bufCnt++
-    if s[idx] == '(' {
-        helper(s, buf, bufCnt, idx+1, matchDiff+1, leftRm, rightRm, m)
-    } else if s[idx] == ')' {
-        if matchDiff - 1 >= 0 { helper(s, buf, bufCnt, idx+1, matchDiff-1, leftRm, rightRm, m) }
-    } else {
-        helper(s, buf, bufCnt, idx+1, matchDiff, leftRm, rightRm, m)
+
+    if !(s[idx] == ')' && diff == 0) { // keep
+        if s[idx] == '(' { diff++ } else if s[idx] == ')' { diff-- }
+        buf[bufIdx] = s[idx]
+        helper(s, idx+1, buf, bufIdx+1, diff, rmLeftCnt, rmRightCnt, ret)
     }
 }
