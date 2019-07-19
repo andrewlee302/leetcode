@@ -1,26 +1,50 @@
+// O(N*logK), O(K).
+import "container/heap"
 func findKthLargest(nums []int, k int) int {
-    quickselect(nums, 0, len(nums)-1, k)
-    return nums[k-1]
-}
-
-func quickselect(nums []int, left, right, k int) {
-    if left >= right {
-        return
-    }
-    pivotValue := nums[right]
-    storeIndex := left
-    for i := left; i < right; i++ {
-        if nums[i] >  pivotValue {
-            nums[storeIndex], nums[i] = nums[i], nums[storeIndex]
-            storeIndex++
+    h := &IntHeap{}
+    for _, num := range nums {
+        if h.Len() < k {
+            heap.Push(h, num)
+        } else if (*h)[0] < num {
+            (*h)[0] = num
+            heap.Fix(h, 0)
         }
     }
-    nums[storeIndex], nums[right] = nums[right], nums[storeIndex]
-    if k-1 == storeIndex {
-        return
-    } else if k-1 < storeIndex {
-        quickselect(nums, left, storeIndex-1, k)
-    } else {
-        quickselect(nums, storeIndex+1, right, k)
+    return (*h)[0]
+}
+
+type IntHeap []int
+func (h IntHeap) Less (i ,j int) bool { return h[i] < h[j] }
+func (h IntHeap) Swap (i, j int) { h[i], h[j] = h[j], h[i] }
+func (h IntHeap) Len() int { return len(h) }
+func (h *IntHeap) Push(x interface{}) { *h = append(*h, x.(int)) } // add x as element Len()
+func (h *IntHeap) Pop() interface{} { // remove and return element Len() - 1.
+    x := (*h)[len(*h)-1] // Note: (*h)[i]
+    *h = (*h)[:len(*h)-1]
+    return x
+}
+
+// O(N), O(N).
+func findKthLargest(nums []int, k int) int {
+    l, r := 0, len(nums)-1
+    for l <= r {
+        pivot := nums[r]
+        i, p := l, l
+        for ; i < r; i++ {
+            if nums[i] > pivot { 
+                nums[i], nums[p] = nums[p], nums[i] 
+                p++
+            }
+        }
+        nums[r], nums[p] = nums[p], nums[r] // p is the pivotIndex
+        if p - l >= k {
+            r = p - 1
+        } else if p - l + 1 == k {
+            return nums[p]
+        } else {
+            k = k - (p - l + 1)
+            l = p + 1
+        }
     }
+    return -1
 }
