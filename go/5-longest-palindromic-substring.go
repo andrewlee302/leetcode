@@ -1,3 +1,28 @@
+// DP.
+func longestPalindrome(s string) string {
+    if len(s) == 0 { return "" }
+    dp := make([][]bool, len(s))
+    var ret string
+    for i := 0; i < len(s); i++ { dp[i] = make([]bool, len(s)) }
+    for l := 1; l <= len(s); l++ {
+        for i := 0; i+l-1 < len(s); i++ {
+            j := i+l-1
+            if l == 1 || l == 2 && s[i] == s[j] || l > 2 && dp[i+1][j-1] && s[i] == s[j] {
+                dp[i][j] = true
+                ret = s[i:j+1]
+            }
+        }
+    }
+    return ret
+}
+
+// dp[i][j] true or false
+// dp[i][j] =
+// if dp[i+1][j-1] == true && s[i] == s[j]: true
+// else: false
+// dp[i][i] = true
+// dp[i][i+1] = if s[i] == s[i+1]: true else: false
+
 func longestPalindrome(s string) string {
     if len(s) == 0 { return "" }
     maxLen := 1
