@@ -1,28 +1,52 @@
+// simple template.
 func minWindow(s string, t string) string {
-    if len(s) < len(t) { return "" }
-    tDict := make(map[byte]int)
-    for i := 0; i < len(t); i++ { tDict[t[i]]++ }
-    tDictSize := len(tDict)
-    subStrDictMatchCnt := 0
+    if len(s) == 0 || len(t) == 0 || len(t) > len(s) { return "" }
     left, right := 0, 0
-    minimalLen := len(s) + 1
-    ret := ""
+    dictT := make(map[byte]int)
+    for i := 0; i < len(t); i++ { dictT[t[i]]++ }
+    sizeT := len(dictT)
+    ret, retL := "", 0
     for right < len(s) {
-        if remaining, ok := tDict[s[right]]; ok {
-            remaining--
-            tDict[s[right]] = remaining
-            if remaining == 0 { subStrDictMatchCnt++ }
+        if n, ok := dictT[s[right]]; ok {
+            dictT[s[right]]--
+            if n == 1 { sizeT-- }
         }
-        for subStrDictMatchCnt == tDictSize {
-            // left mustn't be more than right
-            if remaining, ok := tDict[s[left]]; ok {
-                tDict[s[left]] = remaining + 1
-                if remaining == 0 { 
-                    subStrDictMatchCnt-- 
-                    // left ~ right
-                    if right-left+1 < minimalLen {
-                        minimalLen = right-left+1
-                        ret = s[left: right+1]
+        for sizeT == 0 {
+            if n, ok := dictT[s[left]]; ok {
+                dictT[s[left]]++
+                if n == 0 { sizeT++ }
+            }
+            if l := right - left + 1; retL == 0 || l < retL {
+                ret, retL = s[left: right+1], l
+            }
+            left++
+        }
+        right++
+    }
+    return ret
+}
+
+// more aggressive
+func minWindow(s string, t string) string {
+    if len(s) == 0 || len(t) == 0 || len(t) > len(s) { return "" }
+    left, right := 0, 0
+    dictT := make(map[byte]int)
+    for i := 0; i < len(t); i++ { dictT[t[i]]++ }
+    sizeT := len(dictT)
+    ret, retL := "", 0
+    for right < len(s) {
+        if n, ok := dictT[s[right]]; ok {
+            dictT[s[right]]--
+            if n == 1 { sizeT-- }
+        }
+        for sizeT == 0 {
+            if n, ok := dictT[s[left]]; ok {
+                dictT[s[left]]++
+                if n == 0 {
+                    sizeT++
+										// aggressive here.
+                    if l := right - left + 1; retL == 0 || l < retL {
+                        ret, retL = s[left: right+1], l
                     }
                 }
             }
@@ -32,4 +56,3 @@ func minWindow(s string, t string) string {
     }
     return ret
 }
-
