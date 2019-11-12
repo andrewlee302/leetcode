@@ -1,39 +1,48 @@
 // Improved from the leftMax & rightMax version (two iterations). O(N), O(1).
 func trap(height []int) int {
-    water := 0
+    if len(height) <= 2 { return 0 }
     left, right := 0, len(height) - 1
-    leftMax, rightMax := 0, 0
-    // left == right, biggest one. So
-    for left <= right {
-        leftMax, rightMax = max(leftMax, height[left]), max(rightMax, height[right])
-        if leftMax < rightMax {
-            // leftMax is real leftMax, real rightMax may be bigger than rightMax.
-            // So we're sure leftMax == min(leftMax, real rightMax).
-            water += leftMax - height[left]
-            left++
-        } else {
-            water += rightMax - height[right]
+    leftMax, rightMax := height[left], height[right]
+    ret := 0
+    for left < right - 1 {
+        var bar int
+        if leftMax >= rightMax {
             right--
+            bar = height[right]
+            rightMax = max(bar, rightMax)
+        } else {
+            left++
+            bar = height[left]
+            leftMax = max(bar, leftMax)
         }
+        ret += max(min(leftMax, rightMax) - bar, 0)
     }
-    return water
+    return ret
 }
+
+func max(i, j int) int { if i > j { return i } else { return j } }
 
 // LeftMax & rightMax. O(N), O(N)
 func trap(height []int) int {
-    water := 0
-    leftMax, rightMax := make([]int, len(height)), make([]int, len(height))
+    if len(height) <= 2 { return 0 }
+    min_max := make([]int, len(height))
+    leftMax, rightMax := 0, 0
     for i := 0; i < len(height); i++ {
-        if i == 0 { leftMax[i] = height[i] } else { leftMax[i] = max(height[i], leftMax[i-1]) }
+        min_max[i] = leftMax
+        leftMax = max(leftMax, height[i])
     }
-    for i := len(height)-1; i >= 0; i-- {
-        if i == len(height)-1 { rightMax[i] = height[i] } else { rightMax[i] = max(height[i], rightMax[i+1]) }
+    for i := len(height) - 1; i >= 0; i-- {
+        min_max[i] = min(min_max[i], rightMax)
+        rightMax = max(rightMax, height[i])
     }
+    ret := 0
     for i := 0; i < len(height); i++ {
-        water += min(leftMax[i], rightMax[i]) - height[i]
+        ret += max(0, min_max[i] - height[i])
     }
-    return water
+    return ret
 }
+
+func max(i, j int) int { if i > j { return i } else { return j } }
 
 // monotonic queue/stack. (strict decreasing). O(N), O(N).
 func trap(height []int) int {

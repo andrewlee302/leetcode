@@ -1,23 +1,15 @@
 func validPalindrome(s string) bool {
-    i, j := 0, len(s) - 1
-    for i < j {
-        if s[i] != s[j] {
-            return isPalindrome(s[i+1:j+1]) || isPalindrome(s[i:j])
+    for l, r := 0, len(s) - 1; l < r; l, r = l + 1, r - 1 {
+        if s[l] != s[r] {
+            return isPalindrome(s[l+1:r+1]) || isPalindrome(s[l:r])
         }
-        i++
-        j--
     }
     return true
 }
 
 func isPalindrome(s string) bool {
-    i, j := 0, len(s) - 1
-    for i < j {
-        if s[i] != s[j] {
-            return false
-        }
-        i++
-        j--
+    for l, r := 0, len(s) - 1; l < r; l, r = l + 1, r - 1 {
+        if s[l] != s[r] { return false }
     }
     return true
 }

@@ -1,24 +1,44 @@
-import "container/heap"
+// Math: calculate idle slots.
 func leastInterval(tasks []byte, n int) int {
-    h := &IntHeap{} 
-    heap.Init(h)
-    counts := make(map[byte]int)
-    for _, task := range tasks { counts[task]++ }
-    for _, count := range counts { heap.Push(h, count) }
+    var cnts [26]int
+    maxNum, maxTypeNum := 0, 0
+    for _, task := range tasks {
+        cnts[task-'A']++
+        if num := cnts[task-'A']; num > maxNum {
+            maxNum = cnts[task-'A']
+            maxTypeNum = 1
+        } else if num == maxNum {
+            maxTypeNum++
+        }
+    }
+    if maxTypeNum > n { return len(tasks) }
+    otherTaskNum := len(tasks) - maxNum * maxTypeNum
+    idleSlots := (maxNum - 1) * (n + 1 - maxTypeNum)
+    if otherTaskNum >= idleSlots { return len(tasks) }
+    return len(tasks) + (idleSlots - otherTaskNum)
+}
+
+// Greedy + max-heap.
+import "container/heap"
+
+func leastInterval(tasks []byte, n int) int {
+    var cnts [26]int
+    for _, task := range tasks { cnts[task-'A']++ }
+    h := &IntHeap{}
+    for _, cnt := range cnts { if cnt != 0 { heap.Push(h, cnt) } }
     time := 0
-    for h.Len() != 0 {
-        var restTaskCnts []int
-        i := 1
-        for ; h.Len() != 0 && i <= n+1; i++ {
-            taskCnt := heap.Pop(h).(int)
-            if taskCnt > 1 { restTaskCnts = append(restTaskCnts, taskCnt - 1) }
+    taskCache := make([]int, 0, 26)
+    for h.Len() > 0 {
+        size := h.Len()
+        i := 0
+        for ; i < min(n + 1, size) ; i++ {
+            if v := heap.Pop(h).(int) - 1; v > 0 {
+                taskCache = append(taskCache, v)
+            }
         }
-        if h.Len() == 0 && len(restTaskCnts) == 0 {
-            time += i - 1
-        } else {
-            time += n + 1
-        }
-        for _, count := range restTaskCnts { heap.Push(h, count) }
+        for _, n := range taskCache { heap.Push(h, n) }
+        taskCache = taskCache[:0]
+        if h.Len() == 0 { time += i } else { time += n + 1 }
     }
     return time
 }
@@ -33,3 +53,5 @@ func (h *IntHeap) Pop() interface{} {
     *h = (*h)[:len(*h)-1]
     return v
 }
+
+func min(i, j int) int { if i < j { return i } else { return j } }
