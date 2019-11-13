@@ -25,25 +25,26 @@ func (h *IntHeap) Pop() interface{} { // remove and return element Len() - 1.
 }
 
 // O(N), O(N).
+import "math/rand"
 func findKthLargest(nums []int, k int) int {
-    l, r := 0, len(nums)-1
+    l, r := 0, len(nums) - 1
     for l <= r {
-        pivot := nums[r]
-        i, p := l, l
-        for ; i < r; i++ {
-            if nums[i] > pivot { 
-                nums[i], nums[p] = nums[p], nums[i] 
+        pivot := rand.Intn(r-l+1)+l
+        nums[pivot], nums[r] = nums[r], nums[pivot]
+        p, q := l, l
+        for ; q < r; q++ {
+            if nums[q] > nums[r] {
+                nums[p], nums[q] = nums[q], nums[p]
                 p++
             }
         }
-        nums[r], nums[p] = nums[p], nums[r] // p is the pivotIndex
-        if p - l >= k {
-            r = p - 1
-        } else if p - l + 1 == k {
+        nums[p], nums[r] = nums[r], nums[p]
+        if p == k - 1 {
             return nums[p]
-        } else {
-            k = k - (p - l + 1)
+        } else if p < k - 1 {
             l = p + 1
+        } else {
+            r = p - 1
         }
     }
     return -1

@@ -6,7 +6,7 @@ func threeSum(nums []int) [][]int {
         target := -nums[i]
         for left, right := i + 1, len(nums) - 1; left < right; {
             _2sum := nums[left] + nums[right]
-            if _2sum < target { 
+            if _2sum < target {
                 for left++; left < right && nums[left-1] == nums[left]; left++ { }
             } else if _2sum > target {
                 for right--; left < right && nums[right+1] == nums[right]; right-- { }

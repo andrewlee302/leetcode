@@ -11,30 +11,32 @@
  * read4(buf) // read4 returns 3. Now buf = ['i','j','k',...], fp points to end of file
  */
 var solution = func(read4 func([]byte) int) func([]byte, int) int {
-    cache := make([]byte, 4)
-    cacheIdx := 0
-    remain := 0
-    EOF := false
     // implement read below.
+    var buf4 [4]byte
+    p, num := 0, 0
+    EOF := false
     return func(buf []byte, n int) int {
-        bufIdx := 0
+        if len(buf) | n == 0 { return 0 }
+        if p == 0 && EOF { return 0 }
+        n = min(len(buf), n)
+        start := 0
         for n > 0 {
-            // if EOF { break } // wrong
-            if remain == 0 {
-                if EOF { break }
-                remain = read4(cache)
-                cacheIdx = 0
-                if remain < 4 { EOF = true }
+            if !EOF && num == 0 {
+                num = read4(buf4[:])
+                p = 0
+                if num == 0 {
+                    EOF = true
+                    return start
+                }
             }
-            copyLen := min(remain, n)
-            copy(buf[bufIdx:], cache[cacheIdx:cacheIdx+copyLen])
-            n -= copyLen
-            bufIdx += copyLen
-            cacheIdx += copyLen
-            remain -= copyLen
+            rn := min(n, num)
+            copy(buf[start:], buf4[p: p+rn])
+            start += rn
+            n -= rn
+            p += rn
+            num -= rn
         }
-        fmt.Println(bufIdx)
-        return bufIdx
+        return start
     }
 }
 

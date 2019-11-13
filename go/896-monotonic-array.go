@@ -1,15 +1,12 @@
 func isMonotonic(A []int) bool {
-    if len(A) < 3 { return true }
-    status := 0 // 0: equal or unkown, 1: increase, 2: decrease
+    flag := false
+    increasing := true
     for i := 1; i < len(A); i++ {
-        if A[i-1] < A[i] {
-            if status == 2 { return false }
-            status = 1
+        if flag && (A[i] > A[i-1] && !increasing || A[i] < A[i-1] && increasing) {
+            return false
         }
-        if A[i-1] > A[i] {
-            if status == 1 { return false }
-            status = 2
-        }
+        if A[i] != A[i-1] { flag = true }
+        if A[i] < A[i-1] { increasing = false }
     }
     return true
 }
