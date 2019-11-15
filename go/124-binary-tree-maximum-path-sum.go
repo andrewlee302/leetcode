@@ -6,36 +6,21 @@
  *     Right *TreeNode
  * }
  */
+
 func maxPathSum(root *TreeNode) int {
+    maxV := root.Val
+    maxPathStartsWith(root, &maxV)
+    return maxV
+}
+
+// return: maxPath starting with root
+func maxPathStartsWith(root *TreeNode, maxV *int) int {
     if root == nil { return 0 }
-    max, _ := helper(root)
-    return max
+    ls, rs := maxPathStartsWith(root.Left, maxV), maxPathStartsWith(root.Right, maxV)
+    startLen := max(max(ls, rs), 0) + root.Val
+    throughLen := max(ls, 0) + max(rs, 0) + root.Val // including starting with root.
+    *maxV = max(throughLen, *maxV)
+    return startLen
 }
 
-// maxPathSum(root) = max(maxPathSum(root.Left), maxPathSum(root.Right), 
-// 		maxPathSumFrom(root.Left) (if>0) + maxPathSumFrom(root.Right) (if>0) + root.Val)
-// maxPathSumFrom(root) = max(maxPathSumFrom(root.Left), maxPathSumFrom(root.Right)) + root.Val
-// root mustn't be null
-// return maximum sum, maximum sum from root
-func helper(root *TreeNode) (int, int) {
-    maxFromRoot, max, maxThroughRoot := root.Val, root.Val, root.Val
-    if root.Left != nil {
-        leftMax, leftMaxFromRoot := helper(root.Left)  
-        if leftMaxFromRoot + root.Val > maxFromRoot { 
-            maxFromRoot = leftMaxFromRoot + root.Val 
-        }
-        if leftMaxFromRoot > 0 { maxThroughRoot += leftMaxFromRoot }
-        if leftMax > max { max = leftMax }
-    }
-    if root.Right != nil {
-        rightMax, rightMaxFromRoot := helper(root.Right)  
-        if rightMaxFromRoot + root.Val > maxFromRoot { 
-            maxFromRoot = rightMaxFromRoot + root.Val
-        }
-        if rightMaxFromRoot > 0 { maxThroughRoot += rightMaxFromRoot }
-        if rightMax > max { max = rightMax }
-    }
-    if maxThroughRoot > max { max = maxThroughRoot }
-    return max, maxFromRoot
-}
-
+func max(i, j int) int { if i > j { return i } else { return j } }
