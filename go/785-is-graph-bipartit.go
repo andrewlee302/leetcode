@@ -1,48 +1,52 @@
+// BFS + colors.
 import "container/list"
-
 func isBipartite(graph [][]int) bool {
-    colors := make([]int, len(graph)) // 0: unvisited, 1: blue, 2: red
+    colors := make(map[int]int) // 0, 1, 2
     for i := 0; i < len(graph); i++ {
-        if colors[i] != 0 { continue }
-        stack := list.New()
-        stack.PushBack(i)
-        colors[i] = 1 // it's the same to set it to 2.
-        for stack.Len() != 0 {
-            e := stack.Back()
-            top := e.Value.(int)
-            stack.Remove(e)
-            for _, v := range graph[top] {
-                expectedColor := 3 - colors[top]
-                if colors[v] == 0 { 
-                    colors[v] = expectedColor
-                    stack.PushBack(v) 
-                } else if colors[v] != expectedColor { return false }
+        if colors[i] == 0 {
+            queue := list.New()
+            queue.PushBack(i)
+            colors[i] = 1
+            for queue.Len() != 0 {
+                e := queue.Front()
+                queue.Remove(e)
+                v := e.Value.(int)
+                nextColor := 3 - colors[v]
+                for _, next := range graph[v] {
+                    if colors[next] == 0 {
+                        colors[next] = nextColor
+                        queue.PushBack(next)
+                    } else if colors[next] != nextColor { 
+                        return false
+                    }
+                }
             }
         }
     }
     return true
 }
 
-// recursion
+// DFS (Iteration) + colors.
 func isBipartite(graph [][]int) bool {
-    colors := make([]int, len(graph)) // 0: unvisited, 1: blue, 2: red
+    colors := make(map[int]int) // 0, 1, 2
     for i := 0; i < len(graph); i++ {
         if colors[i] == 0 {
             colors[i] = 1
-            if !DFS(i, 1, graph, colors) { return false }
-        }
-    }
-    return true
-}
-
-// setIdx describes the root's set.
-func DFS(root int, color int, graph [][]int, colors []int) bool {
-    colors[root] = color
-    for _, node := range graph[root] {
-        if colors[node] == 0 {
-            if !DFS(node, 2-color+1, graph, colors) { return false }
-        } else {
-            if colors[node] != 2-color+1 { return false }
+            var stack []int
+            stack = append(stack, i)
+            for len(stack) != 0 {
+                top := stack[len(stack)-1]
+                stack = stack[:len(stack)-1]
+                nextColor := 3 - colors[top]
+                for _, next := range graph[top] {
+                    if colors[next] == 0 {
+                        colors[next] = nextColor
+                        stack = append(stack, next)
+                    } else if colors[next] != nextColor {
+                        return false
+                    }
+                }
+            }
         }
     }
     return true

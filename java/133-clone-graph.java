@@ -12,6 +12,23 @@ class Node {
     }
 };
 */
+// Simplest recursion with return value.
+class Solution {
+    HashMap<Node, Node> map = new HashMap<>();
+    public Node cloneGraph(Node node) {
+        if (map.get(node) != null)
+            return map.get(node);
+        Node newNode = new Node();
+        newNode.val = node.val;
+        newNode.neighbors = new ArrayList<Node>(node.neighbors.size());
+        map.put(node, newNode);
+        for (Node next: node.neighbors) {
+            newNode.neighbors.add(cloneGraph(next));
+        }
+        return newNode;
+    }
+}
+
 import java.util.Stack;
 
 // DFS iteration
