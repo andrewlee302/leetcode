@@ -1,21 +1,14 @@
 func isOneEditDistance(s string, t string) bool {
-    diff := len(t) - len(s)
-    if diff == 0 { // replace
-        replaceCnt := 0
-        for i := 0; i < len(s); i++ {
-            if s[i] != t[i] { replaceCnt++ }
+    if len(s) > len(t) { return isOneEditDistance(t, s) }
+    if len(t) - len(s) > 1 { return false }
+    for i := 0; i < len(s); i++ {
+        if s[i] != t[i] {
+            if len(s) == len(t) {
+                return s[i+1:] == t[i+1:]
+            } else {
+                return s[i:] == t[i+1:]
+            }
         }
-        if replaceCnt == 1 { return true } else { return false }
-    } else if diff == 1 { // add
-        diffCnt := 0
-        for i, j := 0, 0; i < len(s) && j < len(t);  {
-            if s[i] != t[j] { diffCnt++ } else { i++ }
-            j++
-        }
-        if diffCnt <= 1 { return true } else { return false }
-    } else if diff == -1 {
-        return isOneEditDistance(t, s)
-    } else {
-        return false
     }
+    return len(s) + 1 == len(t)
 }

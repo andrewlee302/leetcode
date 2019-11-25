@@ -14,26 +14,20 @@ class Node {
 */
 class Solution {
     public Node insert(Node head, int insertVal) {
-        if (head == null) {
-            head = new Node(insertVal, null);
-            head.next = head;
-            return head;
-        }
-        Node curr = head.next, prev = head;
-        while (curr != head) {
-            // Note!!!
-            if (curr.val < prev.val && (insertVal < curr.val || insertVal > prev.val) || insertVal >= prev.val && insertVal <= curr.val){
-                Node node = new Node(insertVal, curr);
-                prev.next = node;
+        Node node = new Node(insertVal);
+        node.next = node;
+        if (head == null)
+            return node;
+        Node p = head, q = head.next;
+        while (q != head) { // Can't be p != head, as it never goes into the loop.
+            if (p.val <= q.val && insertVal >= p.val && insertVal <= p.next.val || p.val > p.next.val && (insertVal >= p.val || insertVal <= p.next.val)) {
                 break;
             }
-            prev = curr;
-            curr = curr.next;
+            p = q;
+            q = q.next;
         }
-        if (curr == head) {
-            Node node = new Node(insertVal, curr);
-            prev.next = node;
-        }
+        p.next = node;
+        node.next = q;
         return head;
-    } 
+    }
 }
