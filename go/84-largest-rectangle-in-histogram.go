@@ -1,26 +1,17 @@
 func largestRectangleArea(heights []int) int {
-    if len(heights) == 0 {
-        return 0
-    }
-    leftLess := make([]int, len(heights))
-    rightLess := make([]int, len(heights))
-    leftLess[0] = -1
-    rightLess[len(heights)-1] = len(heights)
-    for i := 1; i < len(heights); i++ {
-        k := i - 1
-        for ; k >= 0 && heights[k] >= heights[i]; k = leftLess[k] { }
-        leftLess[i] = k
-    }
-    for i := len(heights) - 1; i >= 0 ; i-- {
-        k := i + 1
-        for ; k < len(heights) && heights[k] >= heights[i]; k = rightLess[k] { }
-        rightLess[i] = k
-    }
-    maxArea := 0
-    for i := 0; i < len(heights); i++ {
-        if area := heights[i] * (rightLess[i] - leftLess[i] - 1); area > maxArea {
-            maxArea = area
+    stack := [][]int{{-1, 0}} // index, height.
+    ret := 0
+    heights = append(heights, 0)
+    for i, h := range heights {
+        for len(stack) != 0 {
+            top := stack[len(stack)-1]
+            if top[1] <= h { break }
+            ret = max(ret, top[1]*(i-stack[len(stack)-2][0]-1))
+            stack = stack[:len(stack)-1]
         }
+        stack = append(stack, []int{i, h})
     }
-    return maxArea
+    return ret
 }
+
+func max(a, b int) int { if a > b { return a } else { return b } }

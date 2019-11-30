@@ -10,33 +10,33 @@
  * read4(buf) // read4 returns 4. Now buf = ['e','f','g','h'], fp points to 'i'
  * read4(buf) // read4 returns 3. Now buf = ['i','j','k',...], fp points to end of file
  */
-var solution = func(read4 func([]byte) int) func([]byte, int) int {
+ var solution = func(read4 func([]byte) int) func([]byte, int) int {
     // implement read below.
-    var buf4 [4]byte
-    p, num := 0, 0
+    var innerBuf [4]byte
     EOF := false
+    start, rest := 0, 0
     return func(buf []byte, n int) int {
-        if len(buf) | n == 0 { return 0 }
-        if p == 0 && EOF { return 0 }
+        if len(buf) == 0 || n == 0 { return 0 }
+        if rest == 0 && EOF { return 0 }
         n = min(len(buf), n)
-        start := 0
+        p := 0
         for n > 0 {
-            if !EOF && num == 0 {
-                num = read4(buf4[:])
-                p = 0
-                if num == 0 {
+            if rest == 0 {
+                rest = read4(innerBuf[:])
+                start = 0
+                if rest == 0 {
                     EOF = true
-                    return start
+                    return p
                 }
             }
-            rn := min(n, num)
-            copy(buf[start:], buf4[p: p+rn])
-            start += rn
-            n -= rn
-            p += rn
-            num -= rn
+            readN := min(n, rest)
+            copy(buf[p:], innerBuf[start:start+readN])
+            p += readN
+            n -= readN
+            start += readN
+            rest -= readN
         }
-        return start
+        return p
     }
 }
 

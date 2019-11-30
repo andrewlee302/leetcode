@@ -1,25 +1,19 @@
-import "container/list"
 import "strings"
 func simplifyPath(path string) string {
-    stack := list.New()
-    parts := strings.Split(path, "/")
-    for _, part := range parts {
-        if part == "." || part == "" { continue }
-        if part == ".." {
-            if stack.Len() >= 1 { stack.Remove(stack.Back()) }
-            continue
-        } 
-        stack.PushBack(part)
-        // fmt.Println("x"+part)
+    var stack []string
+    strs := strings.Split(path, "/") // strs[0] == ""
+    for i := 1; i < len(strs); i++ {
+        if str := strs[i]; str == ".." {
+            if len(stack) > 0 { stack = stack[:len(stack)-1] } // pop
+        } else if str != "." && str != "" {
+            stack = append(stack, str)
+        } else { } // ".", "" nothing
     }
     var builder strings.Builder
-    if stack.Len() == 0 { return "/" }
-    for stack.Len() != 0 {
-        e := stack.Front()
-        stack.Remove(e)
-        v := e.Value.(string)
+    for i := 0; i < len(stack); i++ {
         builder.WriteString("/")
-        builder.WriteString(v)
+        builder.WriteString(stack[i])
     }
-    return builder.String()
+    ret := builder.String()
+    if ret == "" { return "/" } else { return ret }
 }

@@ -1,17 +1,13 @@
 func wordBreak(s string, wordDict []string) bool {
-    dict := make(map[string]bool)
-    for _, w := range wordDict { dict[w] = true }
-    dp := make([]bool, len(s) + 1)
-    dp[0] = true
-    for i := 1; i <= len(s); i++ {
-        for j := 0; j < i; j++ {
-            dp[i] = dp[j] && dict[s[j:i]]
-            if dp[i] { break }
+    if len(s) == 0 { return false }
+    dictM := make(map[string]bool)
+    for _, str := range wordDict { dictM[str] = true }
+    dp := make([]bool, len(s))
+    for i := 0; i < len(s); i++ {
+        dp[i] = dictM[s[:i+1]]
+        for j := i - 1; j >= 0; j-- {
+            dp[i] = dp[i] || (dp[j] && dictM[s[j+1:i+1]])
         }
     }
-    return dp[len(s)]
+    return dp[len(s)-1]
 }
-
-// dp[0..len(s)] len(s) inclusive
-// dp[0] = true
-// dp[i] = dp[0] && dict[s[0:i]] || dp[1] && dict[s[1:i]] || xxx || dp[i-1] && dict[s[i-1:i]] 
