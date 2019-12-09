@@ -1,4 +1,4 @@
-# leetcode
+# Preparation for Facebook.
 
 Solutions for leetcode. Mainly focus on Facebook tag.
 
@@ -13,11 +13,10 @@ Programming languages: Golang/Java.
 * 04/11/2019 Video interview on 10:00-10:45 a.m. CDT (16:00-16:45 p.m. in London).
 * 04/15/2019 Get the passed notification.
 * 04/18/2019 Called by a PhD recruiter and make the timing clear.
+* 14/10/2019 Decide the onsite schedule (12/02/2019).
+* 12/02/2019 Onsite in Facebook London.
 * Continue...
 
-## Note.
-1. Design problems are not studies clearly.
-2. Some better approaches are needed in previous problems.
-3. Revise the problems in a plan.
-
+## Note
 * 07/14/2019 Almost scan the 200 most frequenced problems with the Facebook tag.
+* 11/30/2019 Almost scan the popular system design problems.
