@@ -18,7 +18,7 @@ Programming languages: Golang/Java.
 * 12/17/2019 Facebook offer.
 * 12/19/2019 Bargain and compete offer.
 * 12/28/2019 New offer with a higher compensation.
-* 01/02/2019 Accept FB offer.
+* 01/02/2020 Accept FB offer.
 * Continue...
 
 ## Note
